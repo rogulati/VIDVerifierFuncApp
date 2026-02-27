@@ -12,14 +12,14 @@
     },
     "repoURL": {
       "type": "string",
-      "defaultValue": "https://github.com/AzureAD/VIDVerifierFuncApp.git",
+      "defaultValue": "https://github.com/rogulati/VIDVerifierFuncApp.git",
       "metadata": {
         "description": "GitHub repository URL for source deployment."
       }
     },
     "branch": {
       "type": "string",
-      "defaultValue": "main",
+      "defaultValue": "master",
       "metadata": {
         "description": "GitHub repository branch."
       }

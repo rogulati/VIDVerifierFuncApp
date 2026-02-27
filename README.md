@@ -106,7 +106,7 @@ The application reads configuration from environment variables (locally via `loc
 
 Complete the [Prerequisites](#prerequisites) and [Configuration](#configuration) setup before deploying so that you have all the required parameter values.
 
-[![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FAzureAD%2FVIDVerifierFuncApp%2Fmain%2FARMTemplate%2Ftemplate.json)
+[![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2Frogulati%2FVIDVerifierFuncApp%2Fmaster%2FARMTemplate%2Ftemplate.json)
 
 You will be prompted for the following parameters:
 
