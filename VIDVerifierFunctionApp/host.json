@@ -1,0 +1,17 @@
+{
+    "version": "2.0",
+  "logging": {
+    "applicationInsights": {
+      "samplingSettings": {
+        "isEnabled": false
+      },
+      "logLevel": {
+        "Default": "Information"
+      },
+      "enableLiveMetricsFilters": false
+    },
+    "logLevel": {
+      "default": "Information" // Ensures default logging is Information or lower
+    }
+  }
+}
