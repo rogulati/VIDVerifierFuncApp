@@ -2,6 +2,8 @@
 
 An Azure Functions v4 application (**.NET 8, isolated worker**) that orchestrates [Microsoft Entra Verified ID](https://learn.microsoft.com/en-us/entra/verified-id/) presentation requests and delivers real-time verification status notifications to Microsoft Teams.
 
+> **Quick Start:** This repository includes a one-click **Deploy to Azure** button for ARM-based deployment. See the [Deploy to Azure](#deploy-to-azure) section to get started.
+
 ## Overview
 
 VID Verifier acts as a backend service that sits between a calling application and the Microsoft Entra Verified ID service. It:
