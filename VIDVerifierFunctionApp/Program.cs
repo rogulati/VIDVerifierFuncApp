@@ -35,6 +35,20 @@ builder.Services
     .AddSingleton<AccessTokenProvider>()
     .AddSingleton<RequestCache>()
     .AddSingleton<Configuration>()
-    .AddSingleton<INotificationCenter, TeamsNotificationCenter>();
+    .AddSingleton<INotificationCenter>(sp =>
+    {
+        var config = sp.GetRequiredService<Configuration>();
+        return config.NotificationProvider.Equals("webhook", StringComparison.OrdinalIgnoreCase)
+            ? new GenericWebhookNotificationCenter(
+                config,
+                sp.GetRequiredService<IHttpClientFactory>(),
+                sp.GetRequiredService<JsonSerializerOptions>(),
+                sp.GetRequiredService<ILogger<GenericWebhookNotificationCenter>>())
+            : new TeamsNotificationCenter(
+                config,
+                sp.GetRequiredService<IHttpClientFactory>(),
+                sp.GetRequiredService<JsonSerializerOptions>(),
+                sp.GetRequiredService<ILogger<TeamsNotificationCenter>>());
+    });
 
 builder.Build().Run();

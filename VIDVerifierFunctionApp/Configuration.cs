@@ -9,6 +9,8 @@ public class Configuration
     private const string TenantIdKey = "tenantId";
     private const string OriginKey = "origin";
     private const string TeamsNotificationsEndpointKey = "teamsNotificationsEndpoint";
+    private const string NotificationProviderKey = "notificationProvider";
+    private const string NotificationWebhookUrlKey = "notificationWebhookUrl";
     private const string DefaultCredentialTypeKey = "defaultCredentialType";
     private const string DefaultAuthorityKey = "defaultAuthority";
 
@@ -30,8 +32,11 @@ public class Configuration
     public string Origin { get; } = Environment.GetEnvironmentVariable(OriginKey)
         ?? throw new ArgumentNullException(nameof(OriginKey));
 
-    public string TeamsNotificationsEndpoint { get; } = Environment.GetEnvironmentVariable(TeamsNotificationsEndpointKey)
-        ?? throw new ArgumentNullException(nameof(TeamsNotificationsEndpointKey));
+    public string TeamsNotificationsEndpoint { get; } = Environment.GetEnvironmentVariable(TeamsNotificationsEndpointKey) ?? string.Empty;
+
+    public string NotificationProvider { get; } = Environment.GetEnvironmentVariable(NotificationProviderKey) ?? "teams";
+
+    public string NotificationWebhookUrl { get; } = Environment.GetEnvironmentVariable(NotificationWebhookUrlKey) ?? string.Empty;
 
     public string DefaultCredentialType { get; } = Environment.GetEnvironmentVariable(DefaultCredentialTypeKey)
         ?? "VerifiedEmployee";

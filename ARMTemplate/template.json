@@ -57,8 +57,27 @@
     },
     "teamsNotificationsEndpoint": {
       "type": "string",
+      "defaultValue": "",
       "metadata": {
-        "description": "Microsoft Teams Incoming Webhook URL for notifications."
+        "description": "Microsoft Teams Incoming Webhook URL for notifications. Required when notificationProvider is 'teams'."
+      }
+    },
+    "notificationProvider": {
+      "type": "string",
+      "defaultValue": "teams",
+      "allowedValues": [
+        "teams",
+        "webhook"
+      ],
+      "metadata": {
+        "description": "Notification delivery method: 'teams' for Teams Adaptive Cards or 'webhook' for generic JSON POST."
+      }
+    },
+    "notificationWebhookUrl": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Generic webhook URL for notifications. Required when notificationProvider is 'webhook'."
       }
     },
     "defaultCredentialType": {
@@ -238,6 +257,14 @@
             {
               "name": "teamsNotificationsEndpoint",
               "value": "[parameters('teamsNotificationsEndpoint')]"
+            },
+            {
+              "name": "notificationProvider",
+              "value": "[parameters('notificationProvider')]"
+            },
+            {
+              "name": "notificationWebhookUrl",
+              "value": "[parameters('notificationWebhookUrl')]"
             },
             {
               "name": "defaultCredentialType",

@@ -55,6 +55,7 @@ VIDVerifierFuncApp/
     ├── NotificationCenter/
     │   ├── INotificationCenter.cs          # Notification abstraction
     │   ├── TeamsNotificationCenter.cs      # Teams webhook implementation
+    │   ├── GenericWebhookNotificationCenter.cs # Generic REST webhook implementation
     │   ├── TeamsNotification.cs
     │   ├── AttachmentBuilder.cs
     │   └── ...                             # Adaptive Card block types
@@ -68,7 +69,7 @@ VIDVerifierFuncApp/
 - [Azure Functions Core Tools v4](https://learn.microsoft.com/azure/azure-functions/functions-run-local)
 - An **Azure Key Vault** containing the client secret for the Entra app registration
 - A **Microsoft Entra Verified ID** tenant with an app registration that has the `VerifiableCredentials.Create` permission
-- A **Microsoft Teams Incoming Webhook** URL for notifications
+- A **Microsoft Teams Incoming Webhook** URL *or* any REST webhook endpoint for notifications
 
 ## Configuration
 
@@ -82,7 +83,9 @@ The application reads configuration from environment variables (locally via `loc
 | `clientApiResource` | Verified ID API resource/scope (e.g., `3db474b9-6a0c-4840-96ac-1fceb342124f/.default`) |
 | `tenantId` | Microsoft Entra tenant ID |
 | `origin` | Public base URL of this Function App (used to build the callback URL) |
-| `teamsNotificationsEndpoint` | Teams Incoming Webhook URL |
+| `teamsNotificationsEndpoint` | *(optional)* Teams Incoming Webhook URL — required when `notificationProvider` is `teams` |
+| `notificationProvider` | *(optional)* `teams` (default) for Teams Adaptive Cards or `webhook` for generic JSON POST |
+| `notificationWebhookUrl` | *(optional)* Generic webhook URL — required when `notificationProvider` is `webhook` |
 | `defaultCredentialType` | *(optional)* Default credential type — defaults to `VerifiedEmployee` |
 | `defaultAuthority` | *(optional)* Default DID authority — defaults to `did:web:eu-syntheticsdocumentprovider.azurewebsites.net` |
 
@@ -100,7 +103,9 @@ The application reads configuration from environment variables (locally via `loc
     "clientApiResource": "3db474b9-6a0c-4840-96ac-1fceb342124f/.default",
     "tenantId": "<your-tenant-id>",
     "origin": "https://<your-function-app>.azurewebsites.net",
-    "teamsNotificationsEndpoint": "https://outlook.office.com/webhook/..."
+    "teamsNotificationsEndpoint": "https://outlook.office.com/webhook/...",
+    "notificationProvider": "teams",
+    "notificationWebhookUrl": ""
   }
 }
 ```
@@ -121,7 +126,9 @@ You will be prompted for the following parameters:
 | **Client ID** | App registration client ID with Verified ID permissions |
 | **Client Secret Name** | Name of the Key Vault secret holding the client credential |
 | **Client API Resource** | Verified ID API scope (pre-filled with default) |
-| **Teams Notifications Endpoint** | Incoming Webhook URL for your Teams channel |
+| **Teams Notifications Endpoint** | Incoming Webhook URL for your Teams channel (required if provider is `teams`) |
+| **Notification Provider** | `teams` (Adaptive Cards) or `webhook` (generic JSON POST) |
+| **Notification Webhook URL** | Generic webhook URL (required if provider is `webhook`) |
 | **Default Credential Type** | Credential type to request (defaults to `VerifiedEmployee`) |
 | **Default Authority** | DID authority (defaults to `did:web:eu-syntheticsdocumentprovider.azurewebsites.net`) |
 
@@ -252,14 +259,35 @@ The `verifiedCredentials` array contains one entry per presented credential, eac
 | **RequestCache** | In-memory cache (`IMemoryCache`) that tracks request status, expiration, and caller context |
 | **Configuration** | Reads all required settings from environment variables |
 | **TeamsNotificationCenter** | Sends Adaptive Card notifications to a Teams channel via Incoming Webhook |
+| **GenericWebhookNotificationCenter** | Sends plain JSON notifications to any REST webhook endpoint |
 
 ## Teams Notifications
 
-The app sends three types of Teams notifications throughout the verification lifecycle:
+The app supports two notification providers, selectable via the `notificationProvider` setting:
+
+### Teams Adaptive Cards (`notificationProvider = "teams"`)
+
+Sends rich Adaptive Card messages to a Teams channel via Incoming Webhook. Three card types are sent throughout the verification lifecycle:
 
 1. **Verification Pending** — includes the QR code image for the holder to scan.
 2. **Identity Verified** — confirms the presentation was successful.
 3. **Callback Completed** — confirms the result was delivered to the caller's webhook.
+
+### Generic Webhook (`notificationProvider = "webhook"`)
+
+Sends plain JSON POSTs to any REST endpoint. Each notification includes:
+
+```json
+{
+  "event": "verification_pending | identity_verified | callback_completed",
+  "requestId": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+  "callerName": "Role activation",
+  "message": "Human-readable status message.",
+  "qrCodeUrl": "https://..."  // only present for verification_pending
+}
+```
+
+This makes it compatible with Slack, Discord, PagerDuty, custom dashboards, or any service that accepts HTTP POST with a JSON body.
 
 ## Observability
 
