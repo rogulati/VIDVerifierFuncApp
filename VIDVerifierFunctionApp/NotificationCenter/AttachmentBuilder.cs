@@ -34,7 +34,13 @@ public class AttachmentBuilder
 
     public AttachmentBuilder WithDescription(string description)
     {
-        return AddTextBlock(description);
+        _blocks.Add(new TextBlock
+        {
+            Type = "TextBlock",
+            Text = description,
+            Wrap = true
+        });
+        return this;
     }
 
     public Attachment Build()

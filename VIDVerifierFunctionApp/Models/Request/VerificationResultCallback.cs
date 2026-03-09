@@ -15,5 +15,16 @@ public record VerificationResultCallback
 
     public string? Message { get; init; }
 
-    public Dictionary<string, object>? FaceCheck { get; init; }
+    public List<VerifiedCredentialResult>? VerifiedCredentials { get; init; }
+}
+
+public record VerifiedCredentialResult
+{
+    public string? Issuer { get; init; }
+
+    public List<string>? Type { get; init; }
+
+    public Dictionary<string, object>? Claims { get; init; }
+
+    public FaceCheckResult? FaceCheck { get; init; }
 }

@@ -9,4 +9,6 @@ public record TextBlock : Block
 
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public string? Weight { get; init; }
+
+    public bool? Wrap { get; init; }
 }

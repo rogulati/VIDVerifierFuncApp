@@ -47,9 +47,9 @@ public class PresentationCallbackFunction(
         if (presentationCallbackRequest.RequestStatus == "presentation_verified")
         {
             logger.LogInformation(
-                "Presentation request '{RequestId}' verified successfully. Face check: {FaceCheck}",
+                "Presentation request '{RequestId}' verified successfully. Credentials: {CredentialCount}",
                 presentationCallbackRequest.RequestId,
-                presentationCallbackRequest.FaceCheck);
+                presentationCallbackRequest.VerifiedCredentialsData?.Count ?? 0);
 
             var callerName = requestCache.GetCallerName(presentationCallbackRequest.RequestId);
             notificationCenter.SendPresentationVerifiedNotification(presentationCallbackRequest.RequestId, callerName);
@@ -72,7 +72,15 @@ public class PresentationCallbackFunction(
             RequestId = callback.State,
             Status = "verified",
             Message = "Verified ID presentation completed successfully.",
-            FaceCheck = callback.FaceCheck,
+            VerifiedCredentials = callback.VerifiedCredentialsData?
+                .Select(vc => new VerifiedCredentialResult
+                {
+                    Issuer = vc.Issuer,
+                    Type = vc.Type,
+                    Claims = vc.Claims,
+                    FaceCheck = vc.FaceCheck,
+                })
+                .ToList(),
         };
 
         logger.LogInformation("Performing caller callback for request '{RequestId}' to '{CallbackUrl}'.", result.RequestId, callerCallbackUrl);

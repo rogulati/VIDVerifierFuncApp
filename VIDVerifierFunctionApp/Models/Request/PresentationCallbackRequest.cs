@@ -13,5 +13,5 @@ public record PresentationCallbackRequest
     [JsonRequired]
     public required string State { get; init; }
 
-    public Dictionary<string, object>? FaceCheck { get; init; }
+    public List<VerifiedCredentialData>? VerifiedCredentialsData { get; init; }
 }

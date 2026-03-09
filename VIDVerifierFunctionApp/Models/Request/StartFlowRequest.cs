@@ -32,4 +32,9 @@ public record StartFlowRequest
     /// Whether to require FaceCheck validation. Defaults to true when not provided.
     /// </summary>
     public bool? RequireFaceCheck { get; init; }
+
+    /// <summary>
+    /// List of accepted issuer DIDs. Defaults to the configured defaultAuthority when not provided.
+    /// </summary>
+    public List<string>? AcceptedIssuers { get; init; }
 }

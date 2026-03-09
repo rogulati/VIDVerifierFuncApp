@@ -46,6 +46,7 @@ VIDVerifierFuncApp/
     │   │   ├── CreatePresentationRequest.cs# Payload sent to Verified ID API
     │   │   ├── PresentationCallbackRequest.cs # Callback from Verified ID service
     │   │   ├── Callback.cs
+    │   │   ├── VerifiedCredentialData.cs   # Credential claims & face check result
     │   │   └── VerificationResultCallback.cs  # Payload POSTed back to caller
     │   └── Response/
     │       └── CreateRequestResponse.cs    # Response from Verified ID API
@@ -177,7 +178,8 @@ Creates a new Verified ID presentation request.
   "callerCallbackUrl": "https://caller.example.com/webhook",
   "callerName": "Role activation",
   "credentialType": "VerifiedEmployee",
-  "requireFaceCheck": true
+  "requireFaceCheck": true,
+  "acceptedIssuers": ["did:web:didus.rohitgulati.com"]
 }
 ```
 
@@ -188,6 +190,7 @@ Creates a new Verified ID presentation request.
 | `callerName` | `string` | No | Display name shown in the presentation request and Teams cards |
 | `credentialType` | `string` | No | Credential type to request (defaults to `VerifiedEmployee`) |
 | `requireFaceCheck` | `bool` | No | Whether to require FaceCheck liveness (defaults to `true`) |
+| `acceptedIssuers` | `string[]` | No | List of accepted issuer DIDs (defaults to `defaultAuthority` config value) |
 
 **Success Response (`200 OK`):**
 
@@ -211,9 +214,31 @@ When the presentation status is `presentation_verified`, the function:
   "requestId": "<original-state>",
   "status": "verified",
   "message": "Verified ID presentation completed successfully.",
-  "faceCheck": { ... }
+  "verifiedCredentials": [
+    {
+      "issuer": "did:web:didus.rohitgulati.com",
+      "type": ["VerifiedEmployee"],
+      "claims": {
+        "firstName": "Jane",
+        "lastName": "Doe",
+        "displayName": "Jane Doe"
+      },
+      "faceCheck": {
+        "matchConfidenceScore": 92.5
+      }
+    }
+  ]
 }
 ```
+
+The `verifiedCredentials` array contains one entry per presented credential, each with:
+
+| Field | Type | Description |
+|---|---|---|
+| `issuer` | `string` | DID of the credential issuer |
+| `type` | `string[]` | Credential type(s) |
+| `claims` | `object` | All claims from the presented credential |
+| `faceCheck` | `object` | Face check result with `matchConfidenceScore` (0–100). Present only when FaceCheck was requested. |
 
 ## Architecture
 

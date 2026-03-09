@@ -59,10 +59,13 @@ public class CreatePresentationRequestFunction(
         logger.LogInformation("Creating presentation request with authority: {Authority}, credential: {CredentialType}, faceCheck: {FaceCheck}",
             authority, credentialType, requireFaceCheck);
 
+        var acceptedIssuers = request.AcceptedIssuers ?? [authority];
+
         var credentialConfig = new Dictionary<string, object>
         {
             { "type", credentialType },
             { "purpose", $"Verified ID presentation for {callerName}" },
+            { "acceptedIssuers", acceptedIssuers },
             { "schema",  new Dictionary<string, object>
                 {
                     { "uri", credentialType },
